@@ -5,58 +5,54 @@ read -p "Enter your Telegram bot token: " BOT_TOKEN
 read -p "Enter your Telegram chat ID: " CHAT_ID
 
 # Define the IP monitor script content
-IP_MONITOR_SCRIPT=$(cat <<'EOF'
+IP_MONITOR_SCRIPT=$(cat <<EOF
 #!/bin/bash
 
-BOT_TOKEN="__BOT_TOKEN__"
-CHAT_ID="__CHAT_ID__"
+BOT_TOKEN="$BOT_TOKEN"
+CHAT_ID="$CHAT_ID"
 
 # Function to send a message via Telegram bot
 send_telegram_message() {
-    local message=$1
-    curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
-         -d "chat_id=${CHAT_ID}" \
-         -d "text=${message}" > /dev/null
+    local message=\$1
+    curl -s -X POST "https://api.telegram.org/bot\${BOT_TOKEN}/sendMessage" \
+         -d "chat_id=\${CHAT_ID}" \
+         -d "text=\${message}" > /dev/null
 }
 
 # Function to get the IP address of an interface
 get_ip_address() {
-    local iface=$1
-    ip addr show "$iface" | grep "inet " | awk '{print $2}'
+    local iface=\$1
+    ip addr show "\$iface" | grep "inet " | awk '{print \$2}'
 }
 
 # Initialize previous IPs array
 declare -A previous_ips
 
 # List of interfaces to monitor (myst0 to myst20)
-interfaces=$(seq 0 20)
+interfaces=\$(seq 0 20)
 
 # Populate initial IPs
-for i in $interfaces; do
-    iface="myst$i"
-    previous_ips[$iface]=$(get_ip_address "$iface")
+for i in \$interfaces; do
+    iface="myst\$i"
+    previous_ips[\$iface]=\$(get_ip_address "\$iface")
 done
 
 # Monitoring loop
 while true; do
-    for i in $interfaces; do
-        iface="myst$i"
-        current_ip=$(get_ip_address "$iface")
-        previous_ip=${previous_ips[$iface]}
+    for i in \$interfaces; do
+        iface="myst\$i"
+        current_ip=\$(get_ip_address "\$iface")
+        previous_ip=\${previous_ips[\$iface]}
 
-        if [[ "$current_ip" != "$previous_ip" ]]; then
-            send_telegram_message "${iface} IP changed from ${previous_ip:-"none"} to ${current_ip:-"none"}"
-            previous_ips[$iface]=$current_ip
+        if [[ "\$current_ip" != "\$previous_ip" ]]; then
+            send_telegram_message "\${iface} IP changed from \${previous_ip:-"none"} to \${current_ip:-"none"}"
+            previous_ips[\$iface]=\$current_ip
         fi
     done
     sleep 60
 done
 EOF
 )
-
-# Replace placeholders in the script with user-provided details
-IP_MONITOR_SCRIPT="${IP_MONITOR_SCRIPT/__BOT_TOKEN__/$BOT_TOKEN}"
-IP_MONITOR_SCRIPT="${IP_MONITOR_SCRIPT/__CHAT_ID__/$CHAT_ID}"
 
 # Create the IP monitor script
 echo "$IP_MONITOR_SCRIPT" > /usr/local/bin/ip_monitor.sh
