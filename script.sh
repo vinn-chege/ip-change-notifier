@@ -1,8 +1,15 @@
 #!/bin/bash
 
-# Telegram bot details
-BOT_TOKEN="your_bot_token"
-CHAT_ID="your_chat_id"
+# Prompt for Telegram bot details
+read -p "Enter your Telegram bot token: " BOT_TOKEN
+read -p "Enter your Telegram chat ID: " CHAT_ID
+
+# Define the IP monitor script content
+IP_MONITOR_SCRIPT=$(cat <<'EOF'
+#!/bin/bash
+
+BOT_TOKEN="__BOT_TOKEN__"
+CHAT_ID="__CHAT_ID__"
 
 # Function to send a message via Telegram bot
 send_telegram_message() {
@@ -44,3 +51,43 @@ while true; do
     done
     sleep 60
 done
+EOF
+)
+
+# Replace placeholders in the script with user-provided details
+IP_MONITOR_SCRIPT="${IP_MONITOR_SCRIPT/__BOT_TOKEN__/$BOT_TOKEN}"
+IP_MONITOR_SCRIPT="${IP_MONITOR_SCRIPT/__CHAT_ID__/$CHAT_ID}"
+
+# Create the IP monitor script
+echo "$IP_MONITOR_SCRIPT" > /usr/local/bin/ip_monitor.sh
+
+# Make the script executable
+sudo chmod +x /usr/local/bin/ip_monitor.sh
+
+# Define the systemd service content
+SERVICE_CONTENT=$(cat <<'EOF'
+[Unit]
+Description=IP Monitor Service
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/ip_monitor.sh
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
+EOF
+)
+
+# Create the systemd service file
+echo "$SERVICE_CONTENT" | sudo tee /etc/systemd/system/ip_monitor.service > /dev/null
+
+# Reload systemd to apply the new service
+sudo systemctl daemon-reload
+
+# Enable and start the service
+sudo systemctl enable ip_monitor.service
+sudo systemctl start ip_monitor.service
+
+echo "IP Monitor service has been set up and started."
