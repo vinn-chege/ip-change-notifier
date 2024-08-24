@@ -66,3 +66,28 @@ while true; do
     done
     sleep 60
 done
+```
+
+# IP Monitor Service Setup using systemd
+
+This guide walks you through setting up the bash script as a service using `systemd`.
+
+## Step 1: Create the Python Script
+
+```bash
+sudo nano /usr/local/bin/ip_monitor.sh
+```
+
+## Step 2: Paste in the script
+
+## Step 3: Change script permissions
+
+```bash
+sudo chmod +x /usr/local/bin/ip_monitor.sh
+```
+
+## Step 4: 
+
+
+
+
