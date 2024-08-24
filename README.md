@@ -21,11 +21,11 @@ You can install and set up the IP Monitor script using either `curl` or `wget`.
 ### Using `curl`
 
 ```bash
-curl -s https://github.com/vinn-chege/telegram_nofit-ipchange-myst/blob/main/script.sh | bash
+curl -s https://raw.githubusercontent.com/vinn-chege/telegram_nofit-ipchange-myst/main/script.sh | bash
 ```
 
 ### Using `bash`
 
 ```bash
-wget -qO- https://github.com/vinn-chege/telegram_nofit-ipchange-myst/blob/main/script.sh | bash
+wget -qO- https://raw.githubusercontent.com/vinn-chege/telegram_nofit-ipchange-myst/main/script.sh | bash
 ```
