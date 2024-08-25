@@ -4,6 +4,12 @@
 read -p "Enter your Telegram bot token: " BOT_TOKEN
 read -p "Enter your Telegram chat ID: " CHAT_ID
 
+# Check if BOT_TOKEN or CHAT_ID is empty
+if [[ -z "$BOT_TOKEN" || -z "$CHAT_ID" ]]; then
+    echo "Error: Both Telegram bot token and chat ID must be provided."
+    exit 1
+fi
+
 # Define the IP monitor script content
 IP_MONITOR_SCRIPT=$(cat <<EOF
 #!/bin/bash
